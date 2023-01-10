@@ -20,12 +20,17 @@ var bottom_margin = 20;
 // To adjust the text on the right
 var longest_name_length = 0;
 
+// Minimum and maximum values of BMI
+// to draw tickmaps
+var min_bmi = -1;
+var max_bmi = -1;
+
 
 // var space_name
 
 
 function getLongestNameLength(names){
-  max = -1;
+  var max = -1;
   for (var i = 0; i < names.length; i++) {
     current = textWidth(names[i]);
     if (current > max)
@@ -48,10 +53,22 @@ function setup() {
   countries = data.getColumn("Country");
   // console.log("Countries length: " + countries.length);
 
+  // Setting the font
   textFont(font_type);
   textSize(font_height);
 
+  // Needed to align right
   longest_name_length = getLongestNameLength(countries);
+
+  // Getting values to put the tickmaps
+  var female_bmi = data.getColumn("Female mean BMI (kg/m2)").map(Number);
+  var male_bmi   = data.getColumn("Male mean BMI (kg/m2)").map(Number);
+
+  // Min and max values for tickmaps
+  min_bmi = min(min(female_bmi), min(male_bmi));
+  max_bmi = max(max(female_bmi), max(male_bmi));
+
+
 
 }
 
@@ -85,6 +102,7 @@ function draw() {
 
     // Text
     text_x = left_margin + longest_name_length - textWidth(countries[i]);
+    textAlign(LEFT);
     text(countries[i], text_x, text_y);
 
     // Updating values for the next iteration
@@ -92,6 +110,24 @@ function draw() {
     line_y = text_y - font_height/2;
   }
 
-  // ADD TICKMAPS AND LABELS
+  // Draw vertical lines
+  var round_min = floor(min_bmi);
+  var round_max = floor(max_bmi);
+  for(var i = round_min; i <= round_max; i++) {
+    var vertical_line_x = map(i, round_min,   round_max, 
+                              line_x_left, line_x_right);
+    stroke(font_color);
+    line(vertical_line_x, vertical_line_y_top, 
+         vertical_line_x, vertical_line_y_bottom);
 
+    // Draw tickmaps
+    var scale = 0.3;
+    fill(font_color);
+    noStroke();
+    textAlign(CENTER); // The ascissa will be at the center of the text,
+    // textAlign(RIGHT); // <vertical_line_x> will be at the rightmost letter of the text;
+    text(i, vertical_line_x, vertical_line_y_top - font_height*scale);
+  }
+
+  // ADD TICKMAPS AND LABELS
 }
