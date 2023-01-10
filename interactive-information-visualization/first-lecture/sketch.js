@@ -5,11 +5,21 @@ var canvas_height = 4600; // I can make it bigger now
 // Font settings
 var font_type = 'Arial';
 var font_height = 14;
-var font_color = 'whilte';
+var font_color = 'white';
+var font_weight = 0.5;
 
 // Spacings:
 var line_spacing = 10;
 var space_name_line = 10;
+
+// BMI values F and M
+var female_bmi = [-1];
+var male_bmi = [-1];
+
+// BMI points appearence
+var bmi_color_female;
+var bmi_color_male;
+var bmi_point_weight = 10;
 
 // Margins
 var left_margin = 50; 
@@ -24,6 +34,14 @@ var longest_name_length = 0;
 // to draw tickmaps
 var min_bmi = -1;
 var max_bmi = -1;
+
+// Useful to map the x values of lines and points
+var round_min = -1;
+var round_max = -1;
+
+// grid appearence
+var line_weight = 1;
+var line_color = "white";
 
 
 // var space_name
@@ -61,13 +79,16 @@ function setup() {
   longest_name_length = getLongestNameLength(countries);
 
   // Getting values to put the tickmaps
-  var female_bmi = data.getColumn("Female mean BMI (kg/m2)").map(Number);
-  var male_bmi   = data.getColumn("Male mean BMI (kg/m2)").map(Number);
+  female_bmi = data.getColumn("Female mean BMI (kg/m2)").map(Number);
+  male_bmi   = data.getColumn("Male mean BMI (kg/m2)").map(Number);
 
   // Min and max values for tickmaps
   min_bmi = min(min(female_bmi), min(male_bmi));
   max_bmi = max(max(female_bmi), max(male_bmi));
 
+  // Useful to map the x values of lines and points
+  round_min = floor(min_bmi);
+  round_max = ceil(max_bmi);
 
 
 }
@@ -92,18 +113,43 @@ function draw() {
   text_y = font_height + top_margin;
 
   for(var i = countries.length-1; i >= 0; i--) {
-    fill(font_color);
-    noStroke();
-
     // Grid
-    stroke(font_color);
+    stroke(line_color);
+    strokeWeight(line_weight);
+    // noStroke();
     line(line_x_left,  line_y,
          line_x_right, line_y);
 
     // Text
+    fill(font_color);
+    stroke(font_color);
+    // noStroke();
+    strokeWeight(font_weight);
     text_x = left_margin + longest_name_length - textWidth(countries[i]);
     textAlign(LEFT);
     text(countries[i], text_x, text_y);
+
+    // Drawing points (BMI female and BMI male per country)
+    strokeWeight(bmi_point_weight);
+    // the colors are set later
+    var current_female_bmi = female_bmi[i];
+    var current_male_bmi = male_bmi[i];
+
+    bmi_female_x = map(current_female_bmi, round_min, round_max, 
+                                           line_x_left, line_x_right);
+    
+    bmi_male_x = map(current_male_bmi, round_min, round_max,
+                                       line_x_left, line_x_right);
+
+    bmi_color_female = color(255,0,232); // pink
+    bmi_color_male   = color(0,185,255); // blue
+
+    // female
+    stroke(bmi_color_female);
+    point(bmi_female_x, line_y);
+    //male
+    stroke(bmi_color_male);
+    point(bmi_male_x, line_y);
 
     // Updating values for the next iteration
     text_y += font_height + line_spacing;
@@ -111,23 +157,21 @@ function draw() {
   }
 
   // Draw vertical lines
-  var round_min = floor(min_bmi);
-  var round_max = floor(max_bmi);
   for(var i = round_min; i <= round_max; i++) {
+    stroke(line_color);
+    strokeWeight(line_weight);
     var vertical_line_x = map(i, round_min,   round_max, 
                               line_x_left, line_x_right);
-    stroke(font_color);
+
     line(vertical_line_x, vertical_line_y_top, 
          vertical_line_x, vertical_line_y_bottom);
 
     // Draw tickmaps
+    stroke(font_color);
+    strokeWeight(font_weight);
     var scale = 0.3;
-    fill(font_color);
-    noStroke();
     textAlign(CENTER); // The ascissa will be at the center of the text,
     // textAlign(RIGHT); // <vertical_line_x> will be at the rightmost letter of the text;
     text(i, vertical_line_x, vertical_line_y_top - font_height*scale);
   }
-
-  // ADD TICKMAPS AND LABELS
 }
