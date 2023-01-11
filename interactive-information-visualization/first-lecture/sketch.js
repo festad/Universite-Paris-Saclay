@@ -20,6 +20,8 @@ var male_bmi = [-1];
 var bmi_color_female;
 var bmi_color_male;
 var bmi_point_weight = 10;
+var f_bmi_point_weight = 10;
+var m_bmi_point_weight = 10;
 var bmi_line_weight = 5;
 
 // Margins
@@ -40,12 +42,12 @@ var max_bmi = -1;
 var round_min = -1;
 var round_max = -1;
 
-// grid appearence
+// Grid appearence
 var line_weight = 2;
 var line_color = "white";
 
-
-// var space_name
+// Interaction with mouse
+var dist_from_point = bmi_point_weight;
 
 
 function getLongestNameLength(names){
@@ -127,53 +129,6 @@ function draw() {
 
   text_y = font_height + top_margin;
 
-  for(var i = countries.length-1; i >= 0; i--) {
-    // Grid
-    stroke(line_color);
-    strokeWeight(line_weight);
-    // noStroke();
-    line(line_x_left,  line_y,
-         line_x_right, line_y);
-
-    // Text
-    fill(font_color);
-    stroke(font_color);
-    // noStroke();
-    strokeWeight(font_weight);
-    text_x = left_margin + longest_name_length - textWidth(countries[i]);
-    textAlign(LEFT);
-    text(countries[i], text_x, text_y);
-
-    // Drawing points (BMI female and BMI male per country)
-    strokeWeight(bmi_point_weight);
-    // the colors are set later
-    var current_female_bmi = female_bmi[i];
-    var current_male_bmi = male_bmi[i];
-
-    bmi_female_x = map(current_female_bmi, round_min, round_max, 
-                                           line_x_left, line_x_right);
-    
-    bmi_male_x = map(current_male_bmi, round_min, round_max,
-                                       line_x_left, line_x_right);
-
-    bmi_color_female = color(255,0,232); // pink
-    bmi_color_male   = color(0,185,255); // blue
-
-    // female
-    stroke(bmi_color_female);
-    point(bmi_female_x, line_y);
-    //male
-    stroke(bmi_color_male);
-    point(bmi_male_x, line_y);
-
-    // Draw the colored line between points
-    setGradient(bmi_female_x, bmi_male_x, line_y, bmi_color_female, bmi_color_male, bmi_line_weight);
-
-    // Updating values for the next iteration
-    text_y += font_height + line_spacing;
-    line_y = text_y - font_height/2;
-  }
-
   // Draw vertical lines
   for(var i = round_min; i <= round_max; i++) {
     stroke(line_color);
@@ -192,4 +147,93 @@ function draw() {
     // textAlign(RIGHT); // <vertical_line_x> will be at the rightmost letter of the text;
     text(i, vertical_line_x, vertical_line_y_top - font_height*scale);
   }
+
+  for(var i = countries.length-1; i >= 0; i--) {
+    // Grid
+    stroke(line_color);
+    strokeWeight(line_weight);
+    // noStroke();
+    line(line_x_left,  line_y,
+         line_x_right, line_y);
+
+    // Text
+    fill(font_color);
+    stroke(font_color);
+    // noStroke();
+    strokeWeight(font_weight);
+    text_x = left_margin + longest_name_length - textWidth(countries[i]);
+    textAlign(LEFT);
+    text(countries[i], text_x, text_y);
+
+    // Drawing points (BMI female and BMI male per country)
+    
+    // the colors are set later
+    var current_female_bmi = female_bmi[i];
+    var current_male_bmi = male_bmi[i];
+
+    bmi_female_x = map(current_female_bmi, round_min, round_max, 
+                                           line_x_left, line_x_right);
+    
+    bmi_male_x = map(current_male_bmi, round_min, round_max,
+                                       line_x_left, line_x_right);
+
+    bmi_color_female = color(255,0,232); // pink
+    bmi_color_male   = color(0,185,255); // blue
+
+    // Hovering mouse on point (F or M)
+    // female
+    if(dist(mouseX, mouseY, bmi_female_x, line_y) < dist_from_point) {
+      f_bmi_point_weight = bmi_point_weight*2;
+      // Rectangle with exact values of BMI
+      fill(bmi_color_female);
+      rect(max(bmi_female_x, bmi_male_x)+2*line_spacing, 
+           line_y-2*line_spacing, 
+           8*line_spacing,
+           4*line_spacing);
+      fill(font_color);
+      strokeWeight(font_weight);
+      textAlign(CENTER);
+      text(female_bmi[i], 
+           max(bmi_female_x, bmi_male_x)+2*line_spacing+4*line_spacing, 
+           line_y+font_height/2);
+    } else {
+      f_bmi_point_weight = bmi_point_weight;
+    }
+    // male
+    if(dist(mouseX, mouseY, bmi_male_x, line_y) < dist_from_point) {
+      m_bmi_point_weight = bmi_point_weight*2;
+      // Rectangle with exact values of BMI
+      fill(bmi_color_male);
+      rect(max(bmi_female_x, bmi_male_x)+2*line_spacing, 
+           line_y-2*line_spacing, 
+           8*line_spacing, 
+           4*line_spacing);
+      fill(font_color);
+      strokeWeight(font_weight);
+      textAlign(CENTER);
+      text(male_bmi[i], 
+           max(bmi_female_x, bmi_male_x)+2*line_spacing+4*line_spacing, 
+           line_y+font_height/2);      
+    } else {
+      m_bmi_point_weight = bmi_point_weight;
+    }
+
+    // female
+    stroke(bmi_color_female);
+    strokeWeight(f_bmi_point_weight);
+    point(bmi_female_x, line_y);
+    //male
+    stroke(bmi_color_male);
+    strokeWeight(m_bmi_point_weight);
+    point(bmi_male_x, line_y);
+
+    // Draw the colored line between points
+    setGradient(bmi_female_x, bmi_male_x, line_y, bmi_color_female, bmi_color_male, bmi_line_weight);
+
+    // Updating values for the next iteration
+    text_y += font_height + line_spacing;
+    line_y = text_y - font_height/2;
+  }
+
+
 }
