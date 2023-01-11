@@ -20,6 +20,7 @@ var male_bmi = [-1];
 var bmi_color_female;
 var bmi_color_male;
 var bmi_point_weight = 10;
+var bmi_line_weight = 5;
 
 // Margins
 var left_margin = 50; 
@@ -40,7 +41,7 @@ var round_min = -1;
 var round_max = -1;
 
 // grid appearence
-var line_weight = 1;
+var line_weight = 2;
 var line_color = "white";
 
 
@@ -55,6 +56,20 @@ function getLongestNameLength(names){
       max = current;
   }
   return max;
+}
+
+// c1, c2 -> color of x1 and color of x2
+function setGradient(x1, x2, y, c1, c2, weight) {
+  var min_x = min(x1,x2);
+  var max_x = max(x1,x2);
+  // Draws a sequence of points between the given two
+  for (let i = min_x; i <= max_x; i++) {
+    var inter = map(i, x1, x2, 0, 1);
+    var c = lerpColor(c1,c2,inter);
+    stroke(c);
+    strokeWeight(weight);
+    point(i,y);
+  }
 }
 
 function preload(){
@@ -150,6 +165,9 @@ function draw() {
     //male
     stroke(bmi_color_male);
     point(bmi_male_x, line_y);
+
+    // Draw the colored line between points
+    setGradient(bmi_female_x, bmi_male_x, line_y, bmi_color_female, bmi_color_male, bmi_line_weight);
 
     // Updating values for the next iteration
     text_y += font_height + line_spacing;
