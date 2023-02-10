@@ -28,7 +28,8 @@ fig_feote = px.scatter_geo(df_f, locations="iso_alpha",
                            projection="natural earth")
 
 fig_feote.update_layout(coloraxis_colorbar=dict(
-    title="Population"
+    title="Food-waste emissions\n" +
+          "over total emissions"
 ))                           
 
 # Food related emissions
@@ -42,6 +43,10 @@ fig_fre = px.scatter_geo(df_f, locations="iso_alpha",
                            animation_frame="year",
                            projection="natural earth") 
 
+fig_fre.update_layout(coloraxis_colorbar=dict(
+    title="Food-waste emissions"
+))   
+
 # Food related emissions normalized by population
 fig_frenp = px.scatter_geo(df_f, locations="iso_alpha", 
                            color="value_per_capita", 
@@ -52,6 +57,11 @@ fig_frenp = px.scatter_geo(df_f, locations="iso_alpha",
                            projection="natural earth", 
                            animation_frame="year",
                            color_continuous_scale=px.colors.sequential.Reds)
+
+fig_frenp.update_layout(coloraxis_colorbar=dict(
+    title="Food-waste emissions\n" +
+          "per capita",
+))                              
 
 # Food related emissions normalized by GDP
 fig_frengdp = px.scatter_geo(df_f, locations="iso_alpha", 
@@ -64,10 +74,20 @@ fig_frengdp = px.scatter_geo(df_f, locations="iso_alpha",
                            animation_frame="year",
                            color_continuous_scale=px.colors.sequential.Greens)
 
+fig_frengdp.update_layout(coloraxis_colorbar=dict(
+    title="Food-waste emissions\n" +
+          "per GDP",
+))                              
+
 app = Dash(__name__)
 
 app.layout = html.Div([
-    html.H4('Food waste'),
+    html.H1('Food waste'),
+    html.Div([
+        html.P('Source code:'),
+        html.A('festad/Universite-Paris-Saclay/interactive-information-visualization', 
+               href='https://github.com/festad/Universite-Paris-Saclay/tree/main/interactive-information-visualization/project')
+    ]),
     dcc.Graph(figure=fig_feote),
     dcc.Graph(figure=fig_fre),
     dcc.Graph(figure=fig_frenp),
