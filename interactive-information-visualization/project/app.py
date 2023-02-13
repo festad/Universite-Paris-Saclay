@@ -1,5 +1,4 @@
 from dash import Dash, dcc, html, Input, Output
-import dash_bootstrap_components as dbc
 from pathlib import Path
 # import PreventUpdate
 from dash.exceptions import PreventUpdate
@@ -8,6 +7,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 
 import pandas as pd
+import numpy as np
 
 SIZE_MAX = 40
 
@@ -89,8 +89,26 @@ default_fig_map_fre = px.scatter_geo(df_f, locations="iso_alpha",
                            projection="natural earth") 
 
 default_fig_map_fre.update_layout(coloraxis_colorbar=dict(
-    title="Food-waste emissions"
-))   
+    title="Total Food-waste emissions"
+))
+
+# Map showing the food related emissions
+# in a given year
+def draw_fig_map_fre(year):
+    df_fre = df[(df.cause == ALL_CAUSES) & (df.year == year)]
+    fig_fre = px.scatter_geo(df_fre, locations="iso_alpha", 
+                           color="value", 
+                           size="value", 
+                           hover_name="country",
+                           # symbol='cause',
+                           size_max=SIZE_MAX,
+                           color_continuous_scale=px.colors.sequential.Greys,
+                           projection='natural earth')
+
+    fig_fre.update_layout(coloraxis_colorbar=dict(
+        title="Total Food-waste emissions"
+    ))   
+    return fig_fre
 
 # ============================================================
 # Different causes of food-waste related emissions
@@ -102,8 +120,34 @@ dom_wastewater = dff[dff.cause == 'Domestic wastewater'].value.sum()
 ind_wastewater = dff[dff.cause == 'Industrial wastewater'].value.sum()
 sol_food_waste = dff[dff.cause == 'Solid food waste'].value.sum()
 
-print(dom_wastewater, ind_wastewater, sol_food_waste)
-default_fig_bar_causes = px.bar(x=['Domestic wastewater', 'Industrial wastewater', 'Solid food waste'], y=[dom_wastewater, ind_wastewater, sol_food_waste])
+# print(dom_wastewater, ind_wastewater, sol_food_waste)
+default_fig_bar_causes = px.bar(x=['Domestic wastewater', 'Industrial wastewater', 'Solid food waste'], 
+        y=[dom_wastewater, ind_wastewater, sol_food_waste],
+        color=['Domestic wastewater', 'Industrial wastewater', 'Solid food waste'])
+
+default_fig_bar_causes.update_layout(
+    title=f'Causes of emissions summed up from 1990',
+    xaxis_title="Food-waste cause",
+    yaxis_title="Emissions (kt)",
+)
+
+def draw_general_fig_bar_causes(year):
+    global df
+    dff = df[df.cause != ALL_CAUSES]
+    dff = dff[dff.year == year]
+    dom_wastewater = dff[dff.cause == 'Domestic wastewater'].value.sum()
+    ind_wastewater = dff[dff.cause == 'Industrial wastewater'].value.sum()
+    sol_food_waste = dff[dff.cause == 'Solid food waste'].value.sum()
+    fig_bar_causes = px.bar(x=['Domestic wastewater', 'Industrial wastewater', 'Solid food waste'],
+            y=[dom_wastewater, ind_wastewater, sol_food_waste],
+            color=['Domestic wastewater', 'Industrial wastewater', 'Solid food waste'])
+    fig_bar_causes.update_layout(
+        title=f'Causes of emissions in {year}',
+        xaxis_title="Food-waste cause",
+        yaxis_title="Emissions (kt)",
+    )
+    return fig_bar_causes
+
 
 # Bar chart showing the difference causes of emissions
 # in a given country and in a given year
@@ -125,7 +169,29 @@ def draw_fig_bar_causes(country, year):
 
 # Default line chart showing the trend of food-waste related emissions
 dff = df[df.cause != ALL_CAUSES]
-default_fig_line_causes = px.line(dff, x='year', y='value', color='cause')
+ind_wastewater = []
+home_wastewater = []
+solid_waste = []
+for year in range(1990, 2020):
+    tdf = dff[dff['year'] == year]
+    ind_wastewater.append(tdf[tdf['cause'] == 'Industrial wastewater'].value.sum())
+    home_wastewater.append(tdf[tdf['cause'] == 'Domestic wastewater'].value.sum())
+    solid_waste.append(tdf[tdf['cause'] == 'Solid food waste'].value.sum())
+res = dict()
+res['Year'] = np.array(range(1990, 2020))
+res['Industrial wastewater'] = np.array(ind_wastewater)
+res['Domestic wastewater'] = np.array(home_wastewater)
+res['Solid food waste'] = np.array(solid_waste)
+rdf = pd.DataFrame(res)
+default_fig_line_causes = px.line(rdf, x='Year', 
+                            y=['Domestic wastewater', 'Industrial wastewater', 'Solid food waste'],
+                            color_discrete_sequence=px.colors.qualitative.Dark24)
+
+default_fig_line_causes.update_layout(
+    title=f'Trend of food-waste related emissions from 1990 to 2019',
+    xaxis_title="Year",
+    yaxis_title="Emissions (kt)"
+)
 
 # Line chart showing the trend of food-waste related emissions
 # in a given country
@@ -199,7 +265,7 @@ app.layout = html.Div(children=[
                             ]),
                 html.Div(style={},
                         children=[
-                            dcc.Graph(id='id_fig_map_frengdp', figure=default_fig_map_frengdp)
+                            dcc.Graph(id='id_fig_map_fre', figure=default_fig_map_fre)
                             ])
                 # methane_dbc
             ]),
@@ -218,25 +284,35 @@ app.layout = html.Div(children=[
         ])
 ])
 
-LAST_YEAR = 2019
-LAST_COUNTRY = 'France'
+LAST_YEAR = None
+LAST_COUNTRY = None
 
 # Update map and bar chart when year slider is changed
 @app.callback(
     Output(component_id='id_fig_map_feote', component_property='figure'),
     Output(component_id='id_fig_bar_causes', component_property='figure'),
     Output(component_id='id_fig_line_causes', component_property='figure'),
+    Output(component_id='id_fig_map_fre', component_property='figure'),
     Input(component_id='year-slider', component_property='value'),
     Input(component_id='id_fig_map_feote', component_property='clickData')
 )
 def update_over_year(value, clickData):
     global LAST_YEAR
     global LAST_COUNTRY
-    if value is None or clickData is None:
-        raise PreventUpdate
-    else:
-        LAST_YEAR = value
+
+    global default_fig_map_feote
+    global default_fig_bar_causes
+    global default_fig_line_causes
+    global default_fig_map_fre
+
+    if clickData is not None:
         LAST_COUNTRY = clickData['points'][0]['hovertext']
-        return draw_fig_map_feote(value), draw_fig_bar_causes(LAST_COUNTRY, LAST_YEAR), draw_fig_line_causes(LAST_COUNTRY)
+    if value is not None:
+        LAST_YEAR = value    
+
+    if LAST_YEAR is not None and LAST_COUNTRY is None:
+        return draw_fig_map_feote(LAST_YEAR), draw_general_fig_bar_causes(LAST_YEAR), default_fig_line_causes, draw_fig_map_fre(LAST_YEAR)
+
+    return draw_fig_map_feote(LAST_YEAR), draw_fig_bar_causes(LAST_COUNTRY, LAST_YEAR), draw_fig_line_causes(LAST_COUNTRY), draw_fig_map_fre(LAST_YEAR)
 
 app.run_server(debug=True)
