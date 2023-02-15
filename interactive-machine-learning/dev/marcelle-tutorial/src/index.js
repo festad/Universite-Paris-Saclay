@@ -28,9 +28,11 @@ const trainingSet = marcelle.dataset('TrainingSet', store);
 // $instances.subscribe(trainingSet.create);
 
 const trainingSetBrowser = marcelle.datasetBrowser(trainingSet);
+trainingSetBrowser.title = 'Training set';
 
 const classifier = marcelle.mlpClassifier({ layers: [32, 32], epochs: 20 });
 const trainingButton = marcelle.button('Train');
+trainingButton.title = 'Train the classifier';  
 
 trainingButton.$click.subscribe(() => {
   classifier.train(trainingSet);
@@ -103,6 +105,8 @@ btn_new_facial_gesture.$click.subscribe(() => {
   facial_gesture_btns.push(btn);
   // Add on the dashboard
   myDashboard.page('Data Management').sidebar(btn);
+  // Refresh the dsashboard
+  // myDashboard.refresh();
   // Create a new stream for the new button
   // inside the object facial_gesture_instances
   facial_gesture_instances[btn.title] = btn.$click
@@ -126,10 +130,10 @@ const myDashboard = marcelle.dashboard({
 });
 
 myDashboard
-.page('Data Management')
-.sidebar(input, featureExtractor)
-.use([label, btn_new_facial_gesture], trainingSetBrowser, trainingButton)
-.use(plotTraining);
+  .page('Data Management')
+  .sidebar(input, featureExtractor)
+  .use([label, btn_new_facial_gesture], trainingSetBrowser, trainingButton)
+  .use(plotTraining);
 
 
 facial_gesture_btns.forEach(button => {
