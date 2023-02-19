@@ -7,6 +7,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 
 import pandas as pd
+
 import numpy as np
 
 SIZE_MAX = 40
@@ -44,7 +45,7 @@ default_fig_map_feote = px.scatter_geo(dff, locations="iso_alpha",
                            hover_name="country",
                            size_max=SIZE_MAX, 
                            color_continuous_scale=px.colors.sequential.Viridis_r,
-                           # animation_frame="year",
+                        #    animation_frame="year",
                            projection="natural earth")
 
 default_fig_map_feote.update_layout(coloraxis_colorbar=dict(
@@ -85,7 +86,7 @@ default_fig_map_fre = px.scatter_geo(df_f, locations="iso_alpha",
                            # symbol='cause',
                            size_max=SIZE_MAX,
                            color_continuous_scale=px.colors.sequential.Greys,
-                           animation_frame="year",
+                        #    animation_frame="year",
                            projection="natural earth") 
 
 default_fig_map_fre.update_layout(coloraxis_colorbar=dict(
@@ -236,7 +237,28 @@ default_fig_map_frengdp = px.scatter_geo(df_f, locations="iso_alpha",
 default_fig_map_frengdp.update_layout(coloraxis_colorbar=dict(
     title="Food-waste emissions\n" +
           "per GDP",
-))                              
+))     
+
+# ============================================================
+# RIGHT TAB Food related emissions
+# ============================================================
+df_f = df
+df_f = df[df.cause == 'Waste - agri-food systems']
+df_f.sort_values(by=['year'], inplace=True)
+
+anim_fig_map_fre = px.scatter_geo(df_f, locations="iso_alpha", 
+                           color="value", 
+                           size="value", 
+                           hover_name="country",
+                           # symbol='cause',
+                           size_max=SIZE_MAX,
+                           color_continuous_scale=px.colors.sequential.Greys,
+                           animation_frame="year",
+                           projection="natural earth") 
+
+anim_fig_map_fre.update_layout(coloraxis_colorbar=dict(
+    title="Total Food-waste emissions"
+))
 
 app = Dash(__name__)
 
@@ -281,7 +303,11 @@ app.layout = html.Div(children=[
                             dcc.Graph(id='id_fig_line_causes', figure=default_fig_line_causes)
                         ])
             ])
-        ])
+        ]),
+
+    # SHOULD GO ON RIGHT TAB
+    dcc.Graph(id='anim_fig_map_fre', figure=anim_fig_map_fre)
+        
 ])
 
 LAST_YEAR = None
