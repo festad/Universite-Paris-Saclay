@@ -332,92 +332,215 @@ fig_bar_top_polluters_per_gdp.update_layout(
 
 app = Dash(__name__)
 
+str_intro_food_waste = """
+Global food loss and waste is responsible for around 8% of the total emissions of greenhouse gases (GHG) in the world.
+How much is the influence of food waste on the emissions of greenhouse gases in different countries?
+Which countries are the biggest polluters? And what happens when we consider emissions per capita or per GDP?
+This small interactive dashboard will help you investigating and answering these questions.
+Keep in mind: the data are strictly related to the emissions of CH4 (methane) only, other
+gases like N2O (nitrous oxide) or CO2 (carbon dioxide), although influential on the global warming, are not considered.
+"""
 
+str_feote_vs_fre = """
+What immediately emerges from comparing these two maps is that the countries
+in which food waste is a prevalent cause of emissions are not the biggest polluters
+in terms of food waste emissions.
+As an example, Rwanda is the first country a user can spot when looking at the first map,
+but it's even difficult to find it in the second map.
+The same, but inverse, goes for China or India, which are the biggest polluters in terms of food waste emissions,
+but they are not among the countries with the highest food waste emissions over total emissions."""
+
+str_causes = """
+There are three main reasons for food waste emissions of CH4:
+- Domestic waste of water,
+- Industrial waste of water,
+- Solid food waste.
+These three causes influence the emissions in different ways in different countries and also over time.
+Move the slider to see how the emissions of the three causes change over time and click on the bubbles
+on one of the two maps on the left to focus on a specific country.
+Click on the button 'Reset' to go back to the global view.
+"""
+
+str_normalizations = """
+These maps, alongside the bar charts, show that the countries that most contributed to the global food waste emissions
+from 1990. 
+The bar charts show the sum of the values over the years.
+Different points of view put in light different rankings: the top polluters are
+not the top polluters per capita, which again are not the top polluters per GDP.
+"""
 
 app.layout = html.Div(children=[
-    dcc.Slider(
-        id='year-slider',
-        min=df_f.year.min(),
-        max=df_f.year.max(),
-        value=df_f.year.min(),
-        marks={str(year): str(year) for year in df_f.year.unique()},
-        step=None
-    ),
 
-    html.Button('Reset', id='btn-reset'),
+    html.H1(children='Food waste emissions (1990-2019)', style={"width": "80%", "margin": "auto"}),
+    html.Br(),
 
-    html.Div(style={'display': 'grid', 
-                             'gridTemplateColumns': '1fr 1fr', 
-                             'height': '100vh'}, 
+    html.H3(children=str_intro_food_waste, style={"width": "80%", "margin": "auto"}),
+    html.Br(),
+    html.Br(),
 
-            children=[
+    # dcc.Slider(
+    #     id='year-slider',
+    #     min=df_f.year.min(),
+    #     max=df_f.year.max(),
+    #     value=df_f.year.min(),
+    #     marks={str(year): str(year) for year in df_f.year.unique()},
+    #     step=None
+    # ),
 
-            # First column
-            html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
+    # html.Button('Reset', id='btn-reset'),
+
+    html.Table(style={'width': '100%'}, children=[
+        html.Tr(children=[
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(str_feote_vs_fre, style={"width": "80%", "margin": "auto"}),
+            ]),
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(str_causes, style={"width": "80%", "margin": "auto"}),
+            ])
+        ]),
+        html.Br(),
+        html.Br(),
+
+        html.Tr(children=[
+            html.Td(style={'width': '50%', "margin": "auto"}, children=[
+                dcc.Slider(
+                    id='year-slider',
+                    min=df_f.year.min(),
+                    max=df_f.year.max(),
+                    value=df_f.year.min(),
+                    marks={str(year): str(year) for year in df_f.year.unique()},
+                    step=None
+                ),
+            ]),
+            html.Td(style={'width': '50%', "margin": "auto"}, children=[
+                # Reset button
+                html.Div(
+                    style={"width": "50px"}
+                ),
+                html.Button('Reset', id='btn-reset'),
+            ])
+        ]),
+        html.Br(),
+
+        html.Tr(children=[
+            html.Td(style={'width': '50%'}, children=[
                 html.Div(style={},
                         children=[
                             dcc.Graph(id='id_fig_map_feote', figure=default_fig_map_feote)
                             ]),
-                html.Div(style={},
-                        children=[
-                            dcc.Graph(id='id_fig_map_fre', figure=default_fig_map_fre)
-                            ])
-                # methane_dbc
             ]),
-
-            # Second column
-            html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
+            html.Td(style={'width': '50%'}, children=[
                 html.Div(style={},
                         children=[
                             dcc.Graph(id='id_fig_bar_causes', figure=default_fig_bar_causes)
-                        ]),
+                        ])
+            ])
+        ]),
+        html.Tr(children=[
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='id_fig_map_fre', figure=default_fig_map_fre)
+                            ]),
+            ]),
+            html.Td(style={'width': '50%'}, children=[
                 html.Div(style={},
                         children=[
                             dcc.Graph(id='id_fig_line_causes', figure=default_fig_line_causes)
                         ])
             ])
         ]),
+    ]),
+    html.Br(),
+    html.Br(),
 
-        html.Div(style={'display': 'grid', 
-                             'gridTemplateColumns': '1fr 1fr', 
-                             'height': '100vh'}, 
 
-            children=[
 
-            # First column
-            html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
-                html.Div(style={},
-                        children=[
-                            dcc.Graph(id='id_anim_fig_map_fre', figure=anim_fig_map_fre)
-                            ]),
-                html.Div(style={},
-                        children=[
-                            dcc.Graph(id='id_fig_map_frenp', figure=anim_fig_map_frenp)
-                            ]),
-                html.Div(style={},
-                        children=[
-                            dcc.Graph(id='id_fig_map_frengdp', figure=anim_fig_map_frengdp)
-                            ])
+    # html.Div(style={'display': 'grid', 
+    #                          'gridTemplateColumns': '1fr 1fr', 
+    #                          'height': '100vh'}, 
 
-                # methane_dbc
-            ]),
+    #         children=[
 
-            # Second column
-            html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
-                html.Div(style={},
-                        children=[
-                            dcc.Graph(id='fig_bar_top_polluters', figure=fig_bar_top_polluters),
-                        ]),
-                html.Div(style={},
-                        children=[
-                            dcc.Graph(id='fig_bar_top_polluters_per_capita', figure=fig_bar_top_polluters_per_capita),
-                        ]),
-                html.Div(style={},
-                        children=[
-                            dcc.Graph(id='fig_bar_top_polluters_per_gdp', figure=fig_bar_top_polluters_per_gdp),
-                        ])
-            ])
-        ])
+    #         # First column
+    #         html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
+    
+    #             html.Div(str_feote_vs_fre, style={}),
+                
+    #             html.Div(style={},
+    #                     children=[
+    #                         dcc.Graph(id='id_fig_map_feote', figure=default_fig_map_feote)
+    #                         ]),
+
+    #             html.Div(style={},
+    #                     children=[
+    #                         dcc.Graph(id='id_fig_map_fre', figure=default_fig_map_fre)
+    #                         ])
+    #         ]),
+
+    #         # Second column
+    #         html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
+    
+    #             html.Div(str_causes, style={}),
+
+    #             html.Div(style={},
+    #                     children=[
+    #                         dcc.Graph(id='id_fig_bar_causes', figure=default_fig_bar_causes)
+    #                     ]),
+
+    #             html.Div(style={},
+    #                     children=[
+    #                         dcc.Graph(id='id_fig_line_causes', figure=default_fig_line_causes)
+    #                     ])
+    #         ])
+    #     ]),
+
+        
+
+
+        html.Div(str_normalizations, style={"width": "80%", "margin": "auto"}),
+        html.Br(),
+        html.Br(),
+        # html.Div(style={'display': 'grid', 
+        #                      'gridTemplateColumns': '1fr 1fr', 
+        #                      'height': '100vh'}, 
+
+        #     children=[
+
+        #     # First column
+        #     html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
+        #         html.Div(style={},
+        #                 children=[
+        #                     dcc.Graph(id='id_anim_fig_map_fre', figure=anim_fig_map_fre)
+        #                     ]),
+        #         html.Div(style={},
+        #                 children=[
+        #                     dcc.Graph(id='id_fig_map_frenp', figure=anim_fig_map_frenp)
+        #                     ]),
+        #         html.Div(style={},
+        #                 children=[
+        #                     dcc.Graph(id='id_fig_map_frengdp', figure=anim_fig_map_frengdp)
+        #                     ])
+
+        #         # methane_dbc
+        #     ]),
+
+        #     # Second column
+        #     html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
+        #         html.Div(style={},
+        #                 children=[
+        #                     dcc.Graph(id='fig_bar_top_polluters', figure=fig_bar_top_polluters),
+        #                 ]),
+        #         html.Div(style={},
+        #                 children=[
+        #                     dcc.Graph(id='fig_bar_top_polluters_per_capita', figure=fig_bar_top_polluters_per_capita),
+        #                 ]),
+        #         html.Div(style={},
+        #                 children=[
+        #                     dcc.Graph(id='fig_bar_top_polluters_per_gdp', figure=fig_bar_top_polluters_per_gdp),
+        #                 ])
+        #     ])
+        # ])
 
     # SHOULD GO ON RIGHT TAB
     # dcc.Graph(id='anim_fig_map_fre', figure=anim_fig_map_fre),
@@ -425,6 +548,53 @@ app.layout = html.Div(children=[
     # dcc.Graph(id='fig_bar_top_polluters_per_capita', figure=fig_bar_top_polluters_per_capita),
     # dcc.Graph(id='fig_bar_top_polluters_per_gdp', figure=fig_bar_top_polluters_per_gdp)
         
+    html.Table(style={'width': '100%'}, children=[
+        html.Tr(children=[
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='id_anim_fig_map_fre', figure=anim_fig_map_fre)
+                            ]),
+            ]),
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='id_fig_bar_top_polluters', figure=fig_bar_top_polluters)
+                            ]),
+            ])
+        ]), 
+
+        html.Tr(children=[
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='id_fig_map_frenp', figure=anim_fig_map_frenp)
+                            ]),
+            ]),
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='id_fig_bar_top_polluters_per_capita', figure=fig_bar_top_polluters_per_capita)
+                            ]),
+                ]),
+        ]),
+
+        html.Tr(children=[
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='id_fig_map_frengdp', figure=anim_fig_map_frengdp)
+                            ]),
+            ]),
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='id_fig_bar_top_polluters_per_gdp', figure=fig_bar_top_polluters_per_gdp)
+                        ]),
+            ])
+        ])
+    ])
+
 ])
 
 LAST_YEAR = None
