@@ -267,7 +267,7 @@ dff = df[df.cause == 'Waste - agri-food systems']
 dff = dff.pivot(columns='country', values='value', index='year')
 # dff = dff[dff.index >= 2002]
 dff.dropna(axis=1, inplace=True)
-dff = dff.sum().sort_values(ascending=False).head(10)
+dff = dff.sum().sort_values(ascending=False).head(20)
 
 fig_bar_top_polluters = px.bar(dff, x=dff.index, y=dff.values)
 fig_bar_top_polluters.update_layout(
@@ -285,7 +285,7 @@ dff = df[df.cause == 'Waste - agri-food systems']
 dff = dff.pivot(columns='country', values='value_per_capita', index='year')
 # dff = dff[dff.index >= 2002]
 dff.dropna(axis=1, inplace=True)
-dff = dff.sum().sort_values(ascending=False).head(10)
+dff = dff.sum().sort_values(ascending=False).head(20)
 
 fig_bar_top_polluters_per_capita = px.bar(dff, x=dff.index, y=dff.values)
 fig_bar_top_polluters_per_capita.update_layout(
@@ -303,7 +303,8 @@ dff = df[df.cause == 'Waste - agri-food systems']
 dff = dff.pivot(columns='country', values='value_per_gdp', index='year')
 # dff = dff[dff.index >= 2002]
 dff.dropna(axis=1, inplace=True)
-dff = dff.sum().sort_values(ascending=False).head(10)
+dff = dff.rename(columns={'Central African Republic': 'C. African Rep.'})
+dff = dff.sum().sort_values(ascending=False).head(20)
 
 fig_bar_top_polluters_per_gdp = px.bar(dff, x=dff.index, y=dff.values)
 fig_bar_top_polluters_per_gdp.update_layout(
