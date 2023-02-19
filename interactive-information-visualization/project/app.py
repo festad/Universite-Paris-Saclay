@@ -1,4 +1,4 @@
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output, ctx
 from pathlib import Path
 # import PreventUpdate
 from dash.exceptions import PreventUpdate
@@ -272,6 +272,9 @@ app.layout = html.Div(children=[
         marks={str(year): str(year) for year in df_f.year.unique()},
         step=None
     ),
+
+    html.Button('Reset', id='btn-reset'),
+
     html.Div(style={'display': 'grid', 
                              'gridTemplateColumns': '1fr 1fr', 
                              'height': '100vh'}, 
@@ -319,9 +322,10 @@ LAST_COUNTRY = None
     Output(component_id='id_fig_line_causes', component_property='figure'),
     Output(component_id='id_fig_map_fre', component_property='figure'),
     Input(component_id='year-slider', component_property='value'),
-    Input(component_id='id_fig_map_feote', component_property='clickData')
+    Input(component_id='id_fig_map_feote', component_property='clickData'),
+    Input(component_id='btn-reset', component_property='n_clicks')
 )
-def update_over_year(value, clickData):
+def update_over_year(value, clickData, btn_reset):
     global LAST_YEAR
     global LAST_COUNTRY
 
@@ -337,7 +341,11 @@ def update_over_year(value, clickData):
 
     if LAST_YEAR is not None and LAST_COUNTRY is None:
         return draw_fig_map_feote(LAST_YEAR), draw_general_fig_bar_causes(LAST_YEAR), default_fig_line_causes, draw_fig_map_fre(LAST_YEAR)
+    
+    if "btn-reset" == ctx.triggered_id:
+        return draw_fig_map_feote(LAST_YEAR), draw_general_fig_bar_causes(LAST_YEAR), default_fig_line_causes, draw_fig_map_fre(LAST_YEAR)
 
     return draw_fig_map_feote(LAST_YEAR), draw_fig_bar_causes(LAST_COUNTRY, LAST_YEAR), draw_fig_line_causes(LAST_COUNTRY), draw_fig_map_fre(LAST_YEAR)
+
 
 app.run_server(debug=True)
