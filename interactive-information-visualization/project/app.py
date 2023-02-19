@@ -259,6 +259,60 @@ anim_fig_map_fre.update_layout(coloraxis_colorbar=dict(
     title="Total Food-waste emissions"
 ))
 
+# =================================================================================
+# Top polluters (countries) from 1990 to 2019, cause: 'Waste - agri-food systems'
+# =================================================================================
+dff = df[df.cause == 'Waste - agri-food systems']
+# Put the countries as columns and the years as rows
+dff = dff.pivot(columns='country', values='value', index='year')
+# dff = dff[dff.index >= 2002]
+dff.dropna(axis=1, inplace=True)
+dff = dff.sum().sort_values(ascending=False).head(10)
+
+fig_bar_top_polluters = px.bar(dff, x=dff.index, y=dff.values)
+fig_bar_top_polluters.update_layout(
+    title=f'Top polluters from 1990 to 2019',
+    xaxis_title="Country",
+    yaxis_title="Emissions (kt)",
+)
+
+# =================================================================================
+# Top polluters (countries) from 1990 to 2019, cause: 'Waste - agri-food systems',
+# normalized by population
+# =================================================================================
+dff = df[df.cause == 'Waste - agri-food systems']
+# Put the countries as columns and the years as rows
+dff = dff.pivot(columns='country', values='value_per_capita', index='year')
+# dff = dff[dff.index >= 2002]
+dff.dropna(axis=1, inplace=True)
+dff = dff.sum().sort_values(ascending=False).head(10)
+
+fig_bar_top_polluters_per_capita = px.bar(dff, x=dff.index, y=dff.values)
+fig_bar_top_polluters_per_capita.update_layout(
+    title=f'Top polluters per capita from 1990 to 2019',
+    xaxis_title="Country",
+    yaxis_title="Emissions (kt) per capita",
+)
+
+# =================================================================================
+# Top polluters (countries) from 1990 to 2019, cause: 'Waste - agri-food systems',
+# normalized by GDP
+# =================================================================================
+dff = df[df.cause == 'Waste - agri-food systems']
+# Put the countries as columns and the years as rows
+dff = dff.pivot(columns='country', values='value_per_gdp', index='year')
+# dff = dff[dff.index >= 2002]
+dff.dropna(axis=1, inplace=True)
+dff = dff.sum().sort_values(ascending=False).head(10)
+
+fig_bar_top_polluters_per_gdp = px.bar(dff, x=dff.index, y=dff.values)
+fig_bar_top_polluters_per_gdp.update_layout(
+    title=f'Top polluters per GDP from 1990 to 2019',
+    xaxis_title="Country",
+    yaxis_title="Emissions (kt) per $",
+)
+
+
 app = Dash(__name__)
 
 
@@ -308,7 +362,10 @@ app.layout = html.Div(children=[
         ]),
 
     # SHOULD GO ON RIGHT TAB
-    dcc.Graph(id='anim_fig_map_fre', figure=anim_fig_map_fre)
+    dcc.Graph(id='anim_fig_map_fre', figure=anim_fig_map_fre),
+    dcc.Graph(id='fig_bar_top_polluters', figure=fig_bar_top_polluters),
+    dcc.Graph(id='fig_bar_top_polluters_per_capita', figure=fig_bar_top_polluters_per_capita),
+    dcc.Graph(id='fig_bar_top_polluters_per_gdp', figure=fig_bar_top_polluters_per_gdp)
         
 ])
 
