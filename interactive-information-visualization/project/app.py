@@ -206,41 +206,13 @@ def draw_fig_line_causes(country):
     return fig_trend
 
 
-# Food related emissions normalized by population
-default_fig_map_frenp = px.scatter_geo(df_f, locations="iso_alpha", 
-                           color="value_per_capita", 
-                           size="value_per_capita",
-                           hover_name="country",
-                           # symbol='cause',
-                           size_max=SIZE_MAX,
-                           projection="natural earth", 
-                           animation_frame="year",
-                           color_continuous_scale=px.colors.sequential.Reds)
-
-default_fig_map_frenp.update_layout(coloraxis_colorbar=dict(
-    title="Food-waste emissions\n" +
-          "per capita",
-))                              
-
-# Food related emissions normalized by GDP
-default_fig_map_frengdp = px.scatter_geo(df_f, locations="iso_alpha", 
-                           color="value_per_gdp", 
-                           size="value_per_gdp",
-                           hover_name="country",
-                           # symbol='cause',
-                           size_max=SIZE_MAX,
-                           projection="natural earth", 
-                           animation_frame="year",
-                           color_continuous_scale=px.colors.sequential.Greens)
-
-default_fig_map_frengdp.update_layout(coloraxis_colorbar=dict(
-    title="Food-waste emissions\n" +
-          "per GDP",
-))     
-
 # ============================================================
-# RIGHT TAB Food related emissions
+# RIGHT TAB
 # ============================================================
+
+# =========================================
+# MAP - FOOD RELATED EMISSIONS
+# =========================================
 df_f = df
 df_f = df[df.cause == 'Waste - agri-food systems']
 df_f.sort_values(by=['year'], inplace=True)
@@ -258,6 +230,50 @@ anim_fig_map_fre = px.scatter_geo(df_f, locations="iso_alpha",
 anim_fig_map_fre.update_layout(coloraxis_colorbar=dict(
     title="Total Food-waste emissions"
 ))
+
+# ======================================================
+# MAP - FOOD RELATED EMISSIONS NORMALIZED BY POPULATION
+# ======================================================
+df_f = df
+df_f = df[df.cause == 'Waste - agri-food systems']
+df_f.sort_values(by=['year'], inplace=True)
+
+anim_fig_map_frenp = px.scatter_geo(df_f, locations="iso_alpha", 
+                           color="value_per_capita", 
+                           size="value_per_capita",
+                           hover_name="country",
+                           # symbol='cause',
+                           size_max=SIZE_MAX,
+                           projection="natural earth", 
+                           animation_frame="year",
+                           color_continuous_scale=px.colors.sequential.Reds)
+
+anim_fig_map_frenp.update_layout(coloraxis_colorbar=dict(
+    title="Food-waste emissions\n" +
+          "per capita",
+))                              
+
+# ======================================================
+# MAP - FOOD RELATED EMISSIONS NORMALIZED BY GDP
+# ======================================================
+df_f = df
+df_f = df[df.cause == 'Waste - agri-food systems']
+df_f.sort_values(by=['year'], inplace=True)
+
+anim_fig_map_frengdp = px.scatter_geo(df_f, locations="iso_alpha", 
+                           color="value_per_gdp", 
+                           size="value_per_gdp",
+                           hover_name="country",
+                           # symbol='cause',
+                           size_max=SIZE_MAX,
+                           projection="natural earth", 
+                           animation_frame="year",
+                           color_continuous_scale=px.colors.sequential.Greens)
+
+anim_fig_map_frengdp.update_layout(coloraxis_colorbar=dict(
+    title="Food-waste emissions\n" +
+          "per GDP",
+))     
 
 # =================================================================================
 # Top polluters (countries) from 1990 to 2019, cause: 'Waste - agri-food systems'
@@ -362,11 +378,52 @@ app.layout = html.Div(children=[
             ])
         ]),
 
+        html.Div(style={'display': 'grid', 
+                             'gridTemplateColumns': '1fr 1fr', 
+                             'height': '100vh'}, 
+
+            children=[
+
+            # First column
+            html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='id_anim_fig_map_fre', figure=anim_fig_map_fre)
+                            ]),
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='id_fig_map_frenp', figure=anim_fig_map_frenp)
+                            ]),
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='id_fig_map_frengdp', figure=anim_fig_map_frengdp)
+                            ])
+
+                # methane_dbc
+            ]),
+
+            # Second column
+            html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='fig_bar_top_polluters', figure=fig_bar_top_polluters),
+                        ]),
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='fig_bar_top_polluters_per_capita', figure=fig_bar_top_polluters_per_capita),
+                        ]),
+                html.Div(style={},
+                        children=[
+                            dcc.Graph(id='fig_bar_top_polluters_per_gdp', figure=fig_bar_top_polluters_per_gdp),
+                        ])
+            ])
+        ])
+
     # SHOULD GO ON RIGHT TAB
-    dcc.Graph(id='anim_fig_map_fre', figure=anim_fig_map_fre),
-    dcc.Graph(id='fig_bar_top_polluters', figure=fig_bar_top_polluters),
-    dcc.Graph(id='fig_bar_top_polluters_per_capita', figure=fig_bar_top_polluters_per_capita),
-    dcc.Graph(id='fig_bar_top_polluters_per_gdp', figure=fig_bar_top_polluters_per_gdp)
+    # dcc.Graph(id='anim_fig_map_fre', figure=anim_fig_map_fre),
+    # dcc.Graph(id='fig_bar_top_polluters', figure=fig_bar_top_polluters),
+    # dcc.Graph(id='fig_bar_top_polluters_per_capita', figure=fig_bar_top_polluters_per_capita),
+    # dcc.Graph(id='fig_bar_top_polluters_per_gdp', figure=fig_bar_top_polluters_per_gdp)
         
 ])
 
