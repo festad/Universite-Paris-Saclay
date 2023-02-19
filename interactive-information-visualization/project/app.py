@@ -75,8 +75,7 @@ def draw_fig_map_feote(year):
 # ============================================================
 # Food related emissions
 # ============================================================
-df_f = df
-df_f = df[df.cause == 'Waste - agri-food systems']
+df_f = df[(df.cause == 'Waste - agri-food systems') & (df.year == DEFAULT_YEAR)]
 df_f.sort_values(by=['year'], inplace=True)
 
 default_fig_map_fre = px.scatter_geo(df_f, locations="iso_alpha", 
