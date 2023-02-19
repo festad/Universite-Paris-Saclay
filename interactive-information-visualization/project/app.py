@@ -351,19 +351,18 @@ The same, but inverse, goes for China or India, which are the biggest polluters 
 but they are not among the countries with the highest food waste emissions over total emissions."""
 
 str_causes = """
-There are three main reasons for food waste emissions of CH4:
-- Domestic waste of water,
-- Industrial waste of water,
-- Solid food waste.
+There are three main reasons for food waste emissions of CH4: domestic waste of water, industrial waste of water, and solid food waste.
 These three causes influence the emissions in different ways in different countries and also over time.
 Move the slider to see how the emissions of the three causes change over time and click on the bubbles
 on one of the two maps on the left to focus on a specific country.
 Click on the button 'Reset' to go back to the global view.
 """
 
-str_normalizations = """
-These maps, alongside the bar charts, show that the countries that most contributed to the global food waste emissions
-from 1990. 
+str_normalizations_maps = """
+These maps, alongside the bar charts, show the contributions of the countries to the global food waste emissions under
+three different perspectives: the total amount of food waste emissions, the food waste emissions per capita, food waste emissions per GDP."""
+
+str_normalizations_bars = """
 The bar charts show the sum of the values over the years.
 Different points of view put in light different rankings: the top polluters are
 not the top polluters per capita, which again are not the top polluters per GDP.
@@ -371,23 +370,15 @@ not the top polluters per capita, which again are not the top polluters per GDP.
 
 app.layout = html.Div(children=[
 
-    html.H1(children='Food waste emissions (1990-2019)', style={"width": "80%", "margin": "auto"}),
+    html.H1(children='The influence of food waste on the emissions of CH4 (1990-2019)', style={"width": "80%", "margin": "auto"}),
     html.Br(),
 
+    html.H2(children='Overview', style={"width": "80%", "margin": "auto"}),
+    html.Br(),
+    
     html.H3(children=str_intro_food_waste, style={"width": "80%", "margin": "auto"}),
     html.Br(),
     html.Br(),
-
-    # dcc.Slider(
-    #     id='year-slider',
-    #     min=df_f.year.min(),
-    #     max=df_f.year.max(),
-    #     value=df_f.year.min(),
-    #     marks={str(year): str(year) for year in df_f.year.unique()},
-    #     step=None
-    # ),
-
-    # html.Button('Reset', id='btn-reset'),
 
     html.Table(style={'width': '100%'}, children=[
         html.Tr(children=[
@@ -414,9 +405,9 @@ app.layout = html.Div(children=[
             ]),
             html.Td(style={'width': '50%', "margin": "auto"}, children=[
                 # Reset button
-                html.Div(
-                    style={"width": "50px"}
-                ),
+                # html.Div(
+                #     style={"width": "50px"}
+                # ),
                 html.Button('Reset', id='btn-reset'),
             ])
         ]),
@@ -454,101 +445,20 @@ app.layout = html.Div(children=[
     html.Br(),
     html.Br(),
 
-
-
-    # html.Div(style={'display': 'grid', 
-    #                          'gridTemplateColumns': '1fr 1fr', 
-    #                          'height': '100vh'}, 
-
-    #         children=[
-
-    #         # First column
-    #         html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
-    
-    #             html.Div(str_feote_vs_fre, style={}),
-                
-    #             html.Div(style={},
-    #                     children=[
-    #                         dcc.Graph(id='id_fig_map_feote', figure=default_fig_map_feote)
-    #                         ]),
-
-    #             html.Div(style={},
-    #                     children=[
-    #                         dcc.Graph(id='id_fig_map_fre', figure=default_fig_map_fre)
-    #                         ])
-    #         ]),
-
-    #         # Second column
-    #         html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
-    
-    #             html.Div(str_causes, style={}),
-
-    #             html.Div(style={},
-    #                     children=[
-    #                         dcc.Graph(id='id_fig_bar_causes', figure=default_fig_bar_causes)
-    #                     ]),
-
-    #             html.Div(style={},
-    #                     children=[
-    #                         dcc.Graph(id='id_fig_line_causes', figure=default_fig_line_causes)
-    #                     ])
-    #         ])
-    #     ]),
-
-        
-
-
-        html.Div(str_normalizations, style={"width": "80%", "margin": "auto"}),
-        html.Br(),
-        html.Br(),
-        # html.Div(style={'display': 'grid', 
-        #                      'gridTemplateColumns': '1fr 1fr', 
-        #                      'height': '100vh'}, 
-
-        #     children=[
-
-        #     # First column
-        #     html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
-        #         html.Div(style={},
-        #                 children=[
-        #                     dcc.Graph(id='id_anim_fig_map_fre', figure=anim_fig_map_fre)
-        #                     ]),
-        #         html.Div(style={},
-        #                 children=[
-        #                     dcc.Graph(id='id_fig_map_frenp', figure=anim_fig_map_frenp)
-        #                     ]),
-        #         html.Div(style={},
-        #                 children=[
-        #                     dcc.Graph(id='id_fig_map_frengdp', figure=anim_fig_map_frengdp)
-        #                     ])
-
-        #         # methane_dbc
-        #     ]),
-
-        #     # Second column
-        #     html.Div(style={'display': 'grid', 'gridTemplateRows': '1fr 1fr'}, children=[
-        #         html.Div(style={},
-        #                 children=[
-        #                     dcc.Graph(id='fig_bar_top_polluters', figure=fig_bar_top_polluters),
-        #                 ]),
-        #         html.Div(style={},
-        #                 children=[
-        #                     dcc.Graph(id='fig_bar_top_polluters_per_capita', figure=fig_bar_top_polluters_per_capita),
-        #                 ]),
-        #         html.Div(style={},
-        #                 children=[
-        #                     dcc.Graph(id='fig_bar_top_polluters_per_gdp', figure=fig_bar_top_polluters_per_gdp),
-        #                 ])
-        #     ])
-        # ])
-
-    # SHOULD GO ON RIGHT TAB
-    # dcc.Graph(id='anim_fig_map_fre', figure=anim_fig_map_fre),
-    # dcc.Graph(id='fig_bar_top_polluters', figure=fig_bar_top_polluters),
-    # dcc.Graph(id='fig_bar_top_polluters_per_capita', figure=fig_bar_top_polluters_per_capita),
-    # dcc.Graph(id='fig_bar_top_polluters_per_gdp', figure=fig_bar_top_polluters_per_gdp)
+    html.H2(children="Insights", style={"width": "80%", "margin": "auto"}),
+    html.Br(),
+    html.Br(),
         
     html.Table(style={'width': '100%'}, children=[
+        html.Tr(children=[
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(str_normalizations_maps, style={"width": "80%", "margin": "auto"}),
+            ]),
+            html.Td(style={'width': '50%'}, children=[
+                html.Div(str_normalizations_bars, style={"width": "80%", "margin": "auto"}),
+            ])
+        ]),
+
         html.Tr(children=[
             html.Td(style={'width': '50%'}, children=[
                 html.Div(style={},
