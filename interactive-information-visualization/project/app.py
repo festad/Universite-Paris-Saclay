@@ -49,9 +49,8 @@ default_fig_map_feote = px.scatter_geo(dff, locations="iso_alpha",
                                        projection="natural earth")
 
 default_fig_map_feote.update_layout(coloraxis_colorbar=dict(
-    title="Food-waste emissions\n" +
-          "over total emissions"
-))
+        title=""),
+    title=f'Ratio of food-waste related emissions over total emissions')
 
 # Map showing the ratio of food-waste related emissions over total emissions
 # in a given year
@@ -67,9 +66,8 @@ def draw_fig_map_feote(year):
                                projection='natural earth')
 
     fig_feote.update_layout(coloraxis_colorbar=dict(
-        title="Food-waste emissions\n" +
-              "over total emissions"
-    ))
+            title=""),
+        title=f'Ratio of food-waste related emissions over total emissions in {year}')
     return fig_feote
 
 # ============================================================
@@ -89,8 +87,8 @@ default_fig_map_fre = px.scatter_geo(df_f, locations="iso_alpha",
                                      projection="natural earth")
 
 default_fig_map_fre.update_layout(coloraxis_colorbar=dict(
-    title="Total Food-waste emissions"
-))
+        title=""),
+    title=f'Total Food-waste emissions')
 
 # Map showing the food related emissions
 # in a given year
@@ -106,8 +104,8 @@ def draw_fig_map_fre(year):
                              projection='natural earth')
 
     fig_fre.update_layout(coloraxis_colorbar=dict(
-        title="Total Food-waste emissions"
-    ))
+            title=""),
+        title=f'Total Food-waste emissions in {year}')
     return fig_fre
 
 def update_dropdown(country):
@@ -134,6 +132,7 @@ default_fig_bar_causes.update_layout(
     title=f'Causes of emissions summed up from 1990',
     xaxis_title="Food-waste cause",
     yaxis_title="Emissions (kt)",
+    legend_title=""
 )
 
 def draw_general_fig_bar_causes(year):
@@ -150,6 +149,7 @@ def draw_general_fig_bar_causes(year):
         title=f'Causes of emissions in {year}',
         xaxis_title="Food-waste cause",
         yaxis_title="Emissions (kt)",
+        legend_title=""
     )
     return fig_bar_causes
 
@@ -163,6 +163,7 @@ def draw_fig_bar_causes(country, year):
         title=f'Causes of emissions in {country} in {year}',
         xaxis_title="Food-waste cause",
         yaxis_title="Emissions (kt)",
+        legend_title=""
     )
     return fig_cause
 
@@ -195,7 +196,8 @@ default_fig_line_causes = px.line(rdf, x='Year',
 default_fig_line_causes.update_layout(
     title=f'Trend of food-waste related emissions from 1990 to 2019',
     xaxis_title="Year",
-    yaxis_title="Emissions (kt)"
+    yaxis_title="Emissions (kt)",
+    legend_title=""
 )
 
 # Line chart showing the trend of food-waste related emissions
@@ -207,6 +209,7 @@ def draw_fig_line_causes(country):
         title=f'Trend of food-waste related emissions in {country}',
         xaxis_title="Year",
         yaxis_title="Emissions (kt)",
+        legend_title=""
     )
     return fig_trend
 
@@ -233,8 +236,8 @@ anim_fig_map_fre = px.scatter_geo(df_f, locations="iso_alpha",
                                   projection="natural earth")
 
 anim_fig_map_fre.update_layout(coloraxis_colorbar=dict(
-    title="Total Food-waste emissions"
-))
+    title=""),
+    title=f"Food-waste emissions")
 
 # ======================================================
 # MAP - FOOD RELATED EMISSIONS NORMALIZED BY POPULATION
@@ -254,9 +257,10 @@ anim_fig_map_frenp = px.scatter_geo(df_f, locations="iso_alpha",
                                     color_continuous_scale=px.colors.sequential.Reds)
 
 anim_fig_map_frenp.update_layout(coloraxis_colorbar=dict(
-    title="Food-waste emissions\n" +
-          "per capita",
-))
+    title=""),
+    title=f"Food-waste emissions\n" +
+            "per capita")
+
 
 # ======================================================
 # MAP - FOOD RELATED EMISSIONS NORMALIZED BY GDP
@@ -276,9 +280,9 @@ anim_fig_map_frengdp = px.scatter_geo(df_f, locations="iso_alpha",
                                       color_continuous_scale=px.colors.sequential.Greens)
 
 anim_fig_map_frengdp.update_layout(coloraxis_colorbar=dict(
-    title="Food-waste emissions\n" +
-          "per GDP",
-))
+        title=""),
+    title=f"Food-waste emissions\n" +  
+            "per GDP")
 
 # =================================================================================
 # Top polluters (countries) from 1990 to 2019, cause: 'Waste - agri-food systems'
