@@ -546,15 +546,10 @@ def update_over_year(value, clickData, btn_reset, countrySelected):
     global default_fig_line_causes
     global default_fig_map_fre
 
-    # country_status = False
-
-    # if countrySelected is not None and countrySelected!=LAST_COUNTRY:
-    #     LAST_COUNTRY_DROPDOWN = countrySelected
-    #     country_status = True
-
     print('---------------------------------')
 
-    if countrySelected is not None:
+    if countrySelected != '':
+        print("COUNTRY SELECTED: ", countrySelected)
         LAST_COUNTRY = countrySelected
     if clickData is not None:
         if LAST_CLICKED_COUNTRY != clickData['points'][0]['hovertext']:
@@ -580,9 +575,8 @@ def update_over_year(value, clickData, btn_reset, countrySelected):
         return draw_fig_map_feote(LAST_YEAR), draw_general_fig_bar_causes(LAST_YEAR), default_fig_line_causes, update_dropdown(LAST_COUNTRY)
 
     if "btn-reset" == ctx.triggered_id:
-        # LAST_COUNTRY = None
-        # country_status = False
-        return draw_fig_map_feote(LAST_YEAR), draw_general_fig_bar_causes(LAST_YEAR), default_fig_line_causes, update_dropdown(LAST_COUNTRY)
+        LAST_COUNTRY = None
+        return draw_fig_map_feote(LAST_YEAR), draw_general_fig_bar_causes(LAST_YEAR), default_fig_line_causes, update_dropdown(None)
 
     return draw_fig_map_feote(LAST_YEAR), draw_fig_bar_causes(LAST_COUNTRY, LAST_YEAR), draw_fig_line_causes(LAST_COUNTRY), update_dropdown(LAST_COUNTRY)
 
